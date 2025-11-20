@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { dataResponse, DataResponseDTO } from '../common/dto/data-response.dto';
 import { User } from '../db/entities/user.entity';
+import { LoginDTO } from '../user/dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,8 +38,6 @@ export class AuthService {
 
     // TODO: Intergrate email sending capabilities.
 
-    // save the user.
-
     const user = await this.userService.create({
       email,
       password,
@@ -46,11 +45,12 @@ export class AuthService {
       ...rest,
     });
 
-    // return a res
     return dataResponse(user);
   }
 
-  async login() {}
+  async login(dto: LoginDTO) {
+    this.logger.log(`Logging user with email ${dto.email}`);
+  }
 
   async loginJWTResponse() {}
 }
