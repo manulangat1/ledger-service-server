@@ -49,6 +49,7 @@ export class User {
   private async generateSaltAndHash(): Promise<void> {
     if (this.password) {
       this.salt = await genSalt();
+      console.log('Generated salt:', this.salt, 'here');
       this.password = await hashPassword(this.password, this.salt);
     }
   }

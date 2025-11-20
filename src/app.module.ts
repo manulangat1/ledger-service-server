@@ -7,9 +7,11 @@ import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { AntiSpecialCharsMiddleware } from './common/middleware/anti-special-characters.middleware';
 import { TrimmerMiddleware } from './common/middleware/trimmer.middleware';
 import { LoggerMiddleware } from './common/middleware/logs.middleware';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [HealthcheckModule, AppConfigModule],
+  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule],
   controllers: [],
   providers: [
     {
