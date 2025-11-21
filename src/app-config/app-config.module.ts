@@ -17,7 +17,6 @@ import typeorm from '../config';
         configService: ConfigService,
       ): Promise<TypeOrmModuleOptions> => {
         const options = configService.get<TypeOrmModuleOptions>('typeorm');
-        console.log(options);
         if (!options) {
           throw new Error('TypeORM configuration not found in configService');
         }

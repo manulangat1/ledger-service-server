@@ -19,8 +19,9 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  loadUserProfile(user: User) {
+    this.logger.log(`Accessing users profile with user ID ${user.id}`);
+    return user;
   }
 
   findOne(id: number) {
@@ -40,6 +41,25 @@ export class UserService {
       where: {
         email,
       },
+    });
+    return emailExists;
+  }
+
+  async findByEmailWithSelect(email: string): Promise<User | null> {
+    const emailExists = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      select: [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'password',
+        'salt',
+        'createdAt',
+        'updatedAt',
+      ],
     });
     return emailExists;
   }
