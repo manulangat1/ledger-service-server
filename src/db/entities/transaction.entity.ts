@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -9,10 +10,13 @@ import {
 import {
   CurrencySymbol,
   WalletTransactionOperation,
+  WalletTransactionSource,
+  WalletTransactionStatus,
 } from '../../common/constants/types.enum';
 import { Wallet } from './wallet.entity';
 
 @Entity()
+@Index(['source', 'status', 'operation'])
 export class WalletTransaction {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,6 +26,18 @@ export class WalletTransaction {
     enum: WalletTransactionOperation,
   })
   operation: WalletTransactionOperation;
+
+  @Column({
+    type: 'enum',
+    enum: WalletTransactionSource,
+  })
+  source: WalletTransactionSource;
+
+  @Column({
+    type: 'enum',
+    enum: WalletTransactionStatus,
+  })
+  status: WalletTransactionStatus;
 
   @Column('float')
   originalAmount: number;
@@ -40,6 +56,9 @@ export class WalletTransaction {
 
   @Column({ type: 'enum', enum: CurrencySymbol })
   currency: CurrencySymbol;
+
+  @Column({ unique: true })
+  idempotencyKey: string;
 
   @ManyToOne(() => Wallet, (wallet) => wallet.transactions)
   wallet: Wallet;

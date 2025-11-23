@@ -17,10 +17,10 @@ export class Currency {
   currency: string;
 
   @Column()
-  minimumInvestableAmount: number;
+  minimumTopUpAmount: number;
 
   @Column()
-  maximumInvestableAmount: number;
+  maximumWithdrawableAmount: number;
 
   @Column()
   name: string;
