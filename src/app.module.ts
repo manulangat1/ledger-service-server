@@ -10,9 +10,10 @@ import { LoggerMiddleware } from './common/middleware/logs.middleware';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AuthGuard } from './common/guards/auth.guard';
+import { WalletModule } from './wallet/wallet.module';
 
 @Module({
-  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule],
+  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule, WalletModule],
   controllers: [],
   providers: [
     {
