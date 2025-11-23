@@ -12,6 +12,8 @@ import { comparePassword } from '../common/lib/auth';
 import { JwtService } from '@nestjs/jwt';
 import { plainToInstance } from 'class-transformer';
 import { LoginUserDTO } from '../common/dto/login-response.dto';
+import { OkResponse } from '../common/dto/ok-response.dto';
+import { AdminService } from '../admin/admin.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     @InjectRepository(User) private userRepository: Repository<User>,
     private userService: UserService,
     private jwtService: JwtService,
+    private adminService: AdminService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<DataResponseDTO> {
@@ -80,6 +83,25 @@ export class AuthService {
       email: payload.email,
     });
     return token;
+  }
+
+  async adminLogin(dto: LoginDTO): Promise<any> {
+    this.logger.log(`Logging user with email ${dto.email}`);
+    // check whether user exists.
+    const { email, password } = dto;
+
+    const admin = await this.adminService.findByEmailWithSelect(email);
+
+    if (!admin) throw new BadRequestException(_400.INVALID_CREDENTIALS);
+
+    // check for password match.
+    const passwordMatch = await comparePassword(admin, password);
+
+    if (!passwordMatch) throw new BadRequestException(_400.INVALID_CREDENTIALS);
+
+    const transposedUser = plainToInstance(LoginUserDTO, admin);
+
+    return this.responseBuilder(transposedUser);
   }
 
   // TODO: come and build this out as well for admin accounts.

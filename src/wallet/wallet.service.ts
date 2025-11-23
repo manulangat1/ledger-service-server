@@ -359,7 +359,6 @@ export class WalletService {
       .where('wallet.id = :walletId', { walletId: wallet.id })
       .orderBy('transactions.createdAt', 'DESC');
 
-    console.log(queryBuilder);
     if (status) {
       queryBuilder.andWhere('transactions.status = :status', { status });
     }
