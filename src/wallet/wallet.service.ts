@@ -22,6 +22,7 @@ import {
 } from '../common/constants/types.enum';
 import { WalletTransaction } from '../db/entities/transaction.entity';
 import { TransferMoneyDTO } from './dto/transfer-money.dto';
+import { TransactionQueriesDto } from './dto/transaction-queries.dto';
 
 @Injectable()
 export class WalletService {
@@ -334,5 +335,44 @@ export class WalletService {
       amount: transferredAmount,
       idempotencyKey: crypto.randomUUID(),
     });
+  }
+
+  async loadAllWalletTransactions(
+    walletId: number,
+    user: User,
+    queries: TransactionQueriesDto,
+  ): Promise<DataResponseDTO> {
+    const { source, status, operation } = queries;
+    const wallet = await this.walletRepository.findOne({
+      where: {
+        user: {
+          id: user.id,
+        },
+        id: walletId,
+      },
+    });
+    if (!wallet) throw new BadRequestException(_404.WALLET_DOES_NOT_EXIST);
+
+    const queryBuilder = await this.walletTransactionRepository
+      .createQueryBuilder('transactions')
+      .innerJoin('transactions.wallet', 'wallet')
+      .where('wallet.id = :walletId', { walletId: wallet.id })
+      .orderBy('transactions.createdAt', 'DESC');
+
+    console.log(queryBuilder);
+    if (status) {
+      queryBuilder.andWhere('transactions.status = :status', { status });
+    }
+    if (source) {
+      queryBuilder.andWhere('transactions.source = :source', { source });
+    }
+    if (operation) {
+      queryBuilder.andWhere('transactions.operation = :operation', {
+        operation,
+      });
+    }
+
+    const transactions = await queryBuilder.getMany();
+    return dataResponse(transactions);
   }
 }
