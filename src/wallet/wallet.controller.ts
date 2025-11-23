@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,7 @@ import { User } from '../db/entities/user.entity';
 import { CreateWalletDTO } from './dto/create-wallet.dto';
 import { WalletTopUpDTo, WalletWithdrawDTO } from './dto/wallet-withdraw.dto';
 import { TransferMoneyDTO } from './dto/transfer-money.dto';
+import { TransactionQueriesDto } from './dto/transaction-queries.dto';
 
 @Controller()
 @ApiSecurity('access-token')
@@ -68,5 +70,17 @@ export class WalletController {
     @Body() dto: TransferMoneyDTO,
   ) {
     return this.walletService.transferBetweenWallets(id, user, dto);
+  }
+
+  @Get('user/wallets/:id/transactions')
+  @ApiOperation({
+    summary: 'Allows a user to query transactions',
+  })
+  async loadAlltransactions(
+    @Param('id', new ParseIntPipe()) id: number,
+    @CurrentUser() user: User,
+    @Query() queries: TransactionQueriesDto,
+  ) {
+    return this.walletService.loadAllWalletTransactions(id, user, queries);
   }
 }

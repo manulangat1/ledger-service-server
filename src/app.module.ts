@@ -11,9 +11,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AuthGuard } from './common/guards/auth.guard';
 import { WalletModule } from './wallet/wallet.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
-  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule, WalletModule],
+  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule, WalletModule, DashboardModule],
   controllers: [],
   providers: [
     {

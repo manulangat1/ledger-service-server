@@ -1,8 +1,10 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class WalletWithdrawDTO {
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @ApiProperty({
     example: 300,
