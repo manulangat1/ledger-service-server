@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { User } from '../../db/entities/user.entity';
+import { Admin } from '../../db/entities/admin.entity';
 export const hashPassword = async (
   password: string,
   salt: string,
@@ -8,7 +9,7 @@ export const hashPassword = async (
   return bcrypt.hash(password, salt);
 };
 
-export const comparePassword = async (data: User, password: string) => {
+export const comparePassword = async (data: User | Admin, password: string) => {
   return data.password === (await hashPassword(password, data.salt));
 };
 

@@ -76,7 +76,6 @@ export class WalletService {
       return wallet;
     });
 
-    console.log(wallet, 'newly created waller');
     return dataResponse(wallet);
   }
 
@@ -239,8 +238,8 @@ export class WalletService {
 
         const destinationWallet = await manager.findOne(Wallet, {
           where: {
-            user: { id: destinationUserExists?.id },
-            currency: { currency },
+            user: { id: destinationUserExists.id },
+            // currency: { currency },
           },
         });
 
@@ -270,7 +269,6 @@ export class WalletService {
       },
     );
 
-    console.log(transfer, 'my transfer');
     return okResponse('The transfer request has been made successfully!');
   }
 
@@ -311,7 +309,6 @@ export class WalletService {
         .loadOne(),
     ]);
 
-    console.log(sourceCurrency, 'here ', destinationCurrency);
     const sourceWalletAfterCredit = await updateWalletDetails(manager, {
       user,
       wallet: sourceWallet,
@@ -359,7 +356,6 @@ export class WalletService {
       .where('wallet.id = :walletId', { walletId: wallet.id })
       .orderBy('transactions.createdAt', 'DESC');
 
-    console.log(queryBuilder);
     if (status) {
       queryBuilder.andWhere('transactions.status = :status', { status });
     }
