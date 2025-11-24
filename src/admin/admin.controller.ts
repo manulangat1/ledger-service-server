@@ -1,9 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Admin } from '../db/entities/admin.entity';
 import { TransactionQueriesDto } from '../wallet/dto/transaction-queries.dto';
+import { CreateUserByAdminDto } from '../user/dto/create-user.dto';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -21,5 +22,13 @@ export class AdminController {
   @Get('analytics')
   async getAnalytics(@CurrentUser() admin: Admin) {
     return this.adminService.loadStatistics();
+  }
+
+  @Post('user')
+  async addUser(
+    @CurrentUser() admin: Admin,
+    @Body() dto: CreateUserByAdminDto,
+  ) {
+    return this.adminService.addUser(dto);
   }
 }

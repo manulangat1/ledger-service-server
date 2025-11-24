@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 
 export class CreateUserDto {
@@ -31,3 +31,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   lastName: string;
 }
+
+export class CreateUserByAdminDto extends PickType(CreateUserDto, [
+  'email',
+  'firstName',
+  'lastName',
+  'username',
+]) {}

@@ -1,17 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from '../db/entities/admin.entity';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { WalletTransaction } from '../db/entities/transaction.entity';
 import { TransactionQueriesDto } from '../wallet/dto/transaction-queries.dto';
 import { dataResponse, DataResponseDTO } from '../common/dto/data-response.dto';
 import { User } from '../db/entities/user.entity';
 import { Wallet } from '../db/entities/wallet.entity';
 import {
+  CurrencySymbol,
   PocketStatus,
   WalletTransactionOperation,
   WalletTransactionSource,
 } from '../common/constants/types.enum';
+import {
+  CreateUserByAdminDto,
+  CreateUserDto,
+} from '../user/dto/create-user.dto';
+import { Currency } from '../db/entities/currency.entity';
 
 @Injectable()
 export class AdminService {
@@ -23,6 +33,7 @@ export class AdminService {
     private userRepository: Repository<User>,
     @InjectRepository(Wallet)
     private walletRepository: Repository<Wallet>,
+    private dataSource: DataSource,
   ) {}
 
   async findByEmailWithSelect(email: string): Promise<Admin | null> {
@@ -104,5 +115,53 @@ export class AdminService {
       totalWithdrawals,
       totalTransferDebits,
     };
+  }
+
+  async addUser(dto: CreateUserByAdminDto): Promise<DataResponseDTO> {
+    const { email, firstName, lastName, username } = dto;
+
+    const user = await this.dataSource.transaction(
+      async (manager: EntityManager): Promise<User> => {
+        const userExists = await manager.findOne(User, {
+          where: {
+            email,
+          },
+        });
+        if (userExists)
+          throw new BadRequestException('User with email already exists');
+        const password = 'Password@1';
+
+        const user = await manager.create(User, {
+          email,
+          firstName,
+          lastName,
+          username,
+          password,
+        });
+        await manager.save(user);
+
+        const defaultCurrency = await manager.findOne(Currency, {
+          where: {
+            currency: CurrencySymbol.KENYAN,
+            // currency: 'KES',
+          },
+        });
+
+        if (!defaultCurrency) throw new NotFoundException('Currency not found');
+
+        // create the wallet here.
+
+        const wallet = await manager.create(Wallet, {
+          user,
+          balance: 0,
+          currency: defaultCurrency,
+        });
+
+        await manager.save(wallet);
+
+        return user;
+      },
+    );
+    return dataResponse(user);
   }
 }
