@@ -239,8 +239,8 @@ export class WalletService {
         const destinationWallet = await manager.findOne(Wallet, {
           where: {
             user: { id: destinationUserExists.id },
-            // currency: { currency },
           },
+          lock: { mode: 'pessimistic_write' },
         });
 
         if (!destinationWallet)
@@ -265,6 +265,7 @@ export class WalletService {
           amount,
           destinationWallet,
           idempotencyKey,
+          destinationUserExists,
         );
       },
     );
@@ -293,6 +294,7 @@ export class WalletService {
     transferredAmount: number,
     destinationWallet: Wallet,
     idempotencyKey: string,
+    destinationUser: User,
   ): Promise<void> {
     // update source wallet details.
 
@@ -322,7 +324,8 @@ export class WalletService {
     });
 
     const destinationWalletAfterDebit = await updateWalletDetails(manager, {
-      user,
+      // TODO: fix this
+      user: destinationUser,
       wallet: destinationWallet,
       fee: 0,
       currency: destinationCurrency,
