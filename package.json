@@ -24,8 +24,10 @@
     "migration:generate": "npm run typeorm migration:generate   -- -d ./src/config.ts",
     "migration:revert": "npm run typeorm migration:revert -- -d ./src/config.ts",
     "migration:run": "npm run typeorm migration:run -- -d ./src/config.ts",
-    "seed:run": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs -d ./src/config.ts seed:run",
-    "seed:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs  seed:create"
+    "seed:run": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs -d ./src/seed-config.ts seed:run",
+    "seed:create": "ts-node ./node_modules/typeorm-extension/bin/cli.cjs  seed:create", 
+    "docker:dev": "npm run migration:run && npm run seed:run && npm run start:prod"
+   
 
   },
   "dependencies": {
