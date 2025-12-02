@@ -13,6 +13,7 @@ import { genSalt } from 'bcrypt';
 import { hashPassword } from '../../common/lib/auth';
 import { User } from './user.entity';
 import { AdminPermissions } from '../../common/constants/types.enum';
+import { AuditTrail } from './audit-trail.entity';
 @Entity()
 @Index(['email', 'firstName', 'lastName'])
 export class Admin {
@@ -48,6 +49,9 @@ export class Admin {
     default: [],
   })
   permissions: AdminPermissions[];
+
+  @OneToMany(() => AuditTrail, (auditTrail) => auditTrail.admin)
+  auditLogs: AuditTrail[];
 
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {
