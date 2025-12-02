@@ -11,6 +11,7 @@ import {
   UserTypesEnum,
 } from '../common/constants/types.enum';
 import { UserPermission } from '../common/decorators/user-permissions.decorator';
+import { AuditTrailDecorator } from '../common/decorators/audit-trail.decorator';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -20,6 +21,7 @@ export class AdminController {
   @Get('transactions')
   @UserPermission(AdminPermissions.SUPER_ADMIN)
   @UserType(UserTypesEnum.ADMIN)
+  @AuditTrailDecorator('Fetch all transactions by admin')
   async loadTransactions(
     @CurrentUser() admin: Admin,
     @Query() queries: TransactionQueriesDto,
@@ -30,6 +32,7 @@ export class AdminController {
   @Get('analytics')
   @UserPermission(AdminPermissions.SUPER_ADMIN)
   @UserType(UserTypesEnum.ADMIN)
+  @AuditTrailDecorator('Fetch Analytics transactions by admin')
   async getAnalytics(@CurrentUser() admin: Admin) {
     return this.adminService.loadStatistics();
   }

@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { AppConfigModule } from './app-config/app-config.module';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { AntiSpecialCharsMiddleware } from './common/middleware/anti-special-characters.middleware';
 import { TrimmerMiddleware } from './common/middleware/trimmer.middleware';
@@ -14,6 +14,8 @@ import { WalletModule } from './wallet/wallet.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminModule } from './admin/admin.module';
 import { UserTypeGuard } from './common/guards/user-type.guard';
+import { AuditTrailModule } from './audit-trail/audit-trail.module';
+import { AuditTrailInterceptor } from './common/interceptors/audit-trail.interceptor';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { UserTypeGuard } from './common/guards/user-type.guard';
     WalletModule,
     DashboardModule,
     AdminModule,
+    AuditTrailModule,
   ],
   controllers: [],
   providers: [
@@ -38,6 +41,10 @@ import { UserTypeGuard } from './common/guards/user-type.guard';
     {
       provide: APP_FILTER,
       useClass: AllExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditTrailInterceptor,
     },
   ],
 })

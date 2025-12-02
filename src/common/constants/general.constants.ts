@@ -6,3 +6,5 @@ export const PASSWORD = 'password';
 export const EMAIL = 'email';
 
 export const ADMIN_PERMISSIONS = 'ADMIN_PERMISSIONS';
+
+export const AUDIT_TRAIL_DESCRIPTION = 'AUDIT_TRAIL_DESCRIPTION';

@@ -13,6 +13,7 @@ import { Wallet } from './wallet.entity';
 import { genSalt } from 'bcrypt';
 import { hashPassword } from '../../common/lib/auth';
 import { Admin } from './admin.entity';
+import { AuditTrail } from './audit-trail.entity';
 @Entity()
 @Index(['email', 'username'])
 export class User {
@@ -51,6 +52,9 @@ export class User {
     nullable: true,
   })
   createdBy: Admin;
+
+  @OneToMany(() => AuditTrail, (auditTrail) => auditTrail.user)
+  auditLogs: AuditTrail[];
 
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {
