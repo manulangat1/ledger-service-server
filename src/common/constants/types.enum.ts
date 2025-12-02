@@ -44,3 +44,13 @@ export enum UserTypesEnum {
 export enum AdminPermissions {
   SUPER_ADMIN = 'SUPER_ADMIN',
 }
+
+export enum AuditTrailEvents {
+  USER_LOGIN = 'USER_LOGIN',
+  ADMIN_LOGIN = 'ADMIN_LOGIN',
+  USER_PROFILE = 'USER_PROFILE',
+  USER_FETCH_TRANSACTIONS = 'USER_FETCH_TRANSACTIONS',
+  USER_TOP_UP = 'USER_TOP_UP',
+  USER_WITHDRAW = 'USER_WITHDRAW',
+  USER_TRANSFER = 'USER_TRANSFER',
+}

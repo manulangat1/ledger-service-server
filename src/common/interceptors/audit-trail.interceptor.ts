@@ -20,37 +20,41 @@ export class AuditTrailInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
-  ): Observable<any> | Promise<Observable<any>> {
+  ): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    const { user, type } = request.user;
 
     const description = this.reflector.getAllAndOverride(
       AUDIT_TRAIL_DESCRIPTION,
       [context.getHandler(), context.getClass()],
     );
 
-    console.log(description, 'my desc');
+    const authPayload = request.user; // may be undefined
+
     return next.handle().pipe(
       tap(async () => {
-        if (user) {
-          switch (type) {
-            case UserTypesEnum.USER:
-              await this.auditService.create({
-                user,
-                event: description ? description : 'Desc not specified',
-                description: description ? description : 'Desc not specified',
-              });
-              break;
-            case UserTypesEnum.ADMIN:
-              await this.auditService.create({
-                admin: user,
-                event: description ? description : 'Desc not specified',
-                description: description ? description : 'Desc not specified',
-              });
-              break;
-            default:
-              return;
-          }
+        if (!authPayload) {
+          return;
+        }
+
+        const { user, type } = authPayload;
+        const desc = description ?? 'Desc not specified';
+
+        if (!user) return;
+
+        if (type === UserTypesEnum.USER) {
+          await this.auditService.create({
+            user,
+            event: desc,
+            description: desc,
+          });
+        }
+
+        if (type === UserTypesEnum.ADMIN) {
+          await this.auditService.create({
+            admin: user,
+            event: desc,
+            description: desc,
+          });
         }
       }),
     );

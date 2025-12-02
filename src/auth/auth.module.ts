@@ -8,6 +8,7 @@ import { User } from '../db/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AdminModule } from '../admin/admin.module';
+import { AuditTrailModule } from '../audit-trail/audit-trail.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AdminModule } from '../admin/admin.module';
     TypeOrmModule.forFeature([User]),
     UserModule,
     AdminModule,
+    AuditTrailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

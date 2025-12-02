@@ -14,7 +14,12 @@ import { plainToInstance } from 'class-transformer';
 import { LoginUserDTO } from '../common/dto/login-response.dto';
 import { OkResponse } from '../common/dto/ok-response.dto';
 import { AdminService } from '../admin/admin.service';
-import { UserTypesEnum } from '../common/constants/types.enum';
+import {
+  AuditTrailEvents,
+  UserTypesEnum,
+} from '../common/constants/types.enum';
+import { AuditTrailService } from '../audit-trail/audit-trail.service';
+import { Admin } from '../db/entities/admin.entity';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +29,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private adminService: AdminService,
+    private auditService: AuditTrailService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<DataResponseDTO> {
@@ -106,10 +112,24 @@ export class AuthService {
     return this.responseBuilder(transposedUser, UserTypesEnum.ADMIN);
   }
 
-  // TODO: come and build this out as well for admin accounts.
   private async responseBuilder(user: LoginUserDTO, type: string) {
     const accessToken = await this.generateJwtToken(user, type);
+    let payload: any = {};
 
+    if (type === UserTypesEnum.ADMIN) {
+      payload = {
+        admin: user as Admin,
+        event: AuditTrailEvents.ADMIN_LOGIN,
+        description: AuditTrailEvents.ADMIN_LOGIN,
+      };
+    } else {
+      payload = {
+        user: user as User,
+        event: AuditTrailEvents.USER_LOGIN,
+        description: AuditTrailEvents.USER_LOGIN,
+      };
+    }
+    await this.auditService.create(payload);
     return {
       message: 'Successfully logged in',
       accessToken,

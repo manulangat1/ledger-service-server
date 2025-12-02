@@ -15,6 +15,8 @@ import { CreateWalletDTO } from './dto/create-wallet.dto';
 import { WalletTopUpDTo, WalletWithdrawDTO } from './dto/wallet-withdraw.dto';
 import { TransferMoneyDTO } from './dto/transfer-money.dto';
 import { TransactionQueriesDto } from './dto/transaction-queries.dto';
+import { AuditTrailDecorator } from '../common/decorators/audit-trail.decorator';
+import { AuditTrailEvents } from '../common/constants/types.enum';
 
 @Controller()
 @ApiSecurity('access-token')
@@ -26,6 +28,7 @@ export class WalletController {
   @ApiOperation({
     summary: "Fetch all the user's wallet",
   })
+  @AuditTrailDecorator(AuditTrailEvents.USER_FETCH_TRANSACTIONS)
   async getUserWallets(@CurrentUser() user: User) {
     return this.walletService.getUserWallet(user);
   }
@@ -42,6 +45,7 @@ export class WalletController {
   @ApiOperation({
     summary: 'Allows a user to withdraw into a pocket',
   })
+  @AuditTrailDecorator(AuditTrailEvents.USER_WITHDRAW)
   async walletWithdraw(
     @Param('id', new ParseIntPipe()) id: number,
     @CurrentUser() user: User,
@@ -52,6 +56,7 @@ export class WalletController {
 
   @Post('user/wallets/:id/deposit')
   @ApiOperation({ summary: 'Allows a user to deposit into a pocket' })
+  @AuditTrailDecorator(AuditTrailEvents.USER_TOP_UP)
   async walletTopUp(
     @Param('id', new ParseIntPipe()) id: number,
     @CurrentUser() user: User,
@@ -64,6 +69,7 @@ export class WalletController {
   @ApiOperation({
     summary: 'Allows a user to transfer funds using a username as key',
   })
+  @AuditTrailDecorator(AuditTrailEvents.USER_TRANSFER)
   async transfer(
     @Param('id', new ParseIntPipe()) id: number,
     @CurrentUser() user: User,
@@ -76,6 +82,7 @@ export class WalletController {
   @ApiOperation({
     summary: 'Allows a user to query transactions',
   })
+  @AuditTrailDecorator(AuditTrailEvents.USER_WITHDRAW)
   async loadAlltransactions(
     @Param('id', new ParseIntPipe()) id: number,
     @CurrentUser() user: User,
