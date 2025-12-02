@@ -9,11 +9,13 @@ services:
       
       server: 
         build: . 
+        # command: ["npm", "run", "docker:dev"]
+        # command: ["npm", "run", "start:prod"]
         command: ["npm", "run", "start:prod"]
         ports: 
           - "3000:3000"
         env_file: 
-          .env
+          .env.docker
         depends_on: 
           - db
         restart: always
