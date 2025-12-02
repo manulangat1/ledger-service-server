@@ -35,3 +35,12 @@ export enum WalletTransactionStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   TRANSFER_INCOMPLETE = 'TRANSFER_INCOMPLETE',
 }
+
+export enum UserTypesEnum {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+export enum AdminPermissions {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+}

@@ -14,6 +14,7 @@ import { plainToInstance } from 'class-transformer';
 import { LoginUserDTO } from '../common/dto/login-response.dto';
 import { OkResponse } from '../common/dto/ok-response.dto';
 import { AdminService } from '../admin/admin.service';
+import { UserTypesEnum } from '../common/constants/types.enum';
 
 @Injectable()
 export class AuthService {
@@ -74,13 +75,14 @@ export class AuthService {
 
     const transposedUser = plainToInstance(LoginUserDTO, user);
 
-    return this.responseBuilder(transposedUser);
+    return this.responseBuilder(transposedUser, UserTypesEnum.USER);
   }
 
-  async generateJwtToken(payload: LoginUserDTO): Promise<string> {
+  async generateJwtToken(payload: LoginUserDTO, type: any): Promise<string> {
     const token = await this.jwtService.sign({
       sub: payload.id,
       email: payload.email,
+      type,
     });
     return token;
   }
@@ -101,12 +103,12 @@ export class AuthService {
 
     const transposedUser = plainToInstance(LoginUserDTO, admin);
 
-    return this.responseBuilder(transposedUser);
+    return this.responseBuilder(transposedUser, UserTypesEnum.ADMIN);
   }
 
   // TODO: come and build this out as well for admin accounts.
-  private async responseBuilder(user: LoginUserDTO) {
-    const accessToken = await this.generateJwtToken(user);
+  private async responseBuilder(user: LoginUserDTO, type: string) {
+    const accessToken = await this.generateJwtToken(user, type);
 
     return {
       message: 'Successfully logged in',
