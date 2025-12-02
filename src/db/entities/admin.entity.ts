@@ -4,12 +4,15 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { genSalt } from 'bcrypt';
 import { hashPassword } from '../../common/lib/auth';
+import { User } from './user.entity';
+import { AdminPermissions } from '../../common/constants/types.enum';
 @Entity()
 @Index(['email', 'firstName', 'lastName'])
 export class Admin {
@@ -36,6 +39,15 @@ export class Admin {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => User, (user) => user.createdAt)
+  createdUsers: User[];
+
+  @Column({
+    type: 'jsonb',
+    default: [],
+  })
+  permissions: AdminPermissions[];
 
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {

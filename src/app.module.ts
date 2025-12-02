@@ -13,14 +13,27 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { WalletModule } from './wallet/wallet.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AdminModule } from './admin/admin.module';
+import { UserTypeGuard } from './common/guards/user-type.guard';
 
 @Module({
-  imports: [HealthcheckModule, AppConfigModule, AuthModule, UserModule, WalletModule, DashboardModule, AdminModule],
+  imports: [
+    HealthcheckModule,
+    AppConfigModule,
+    AuthModule,
+    UserModule,
+    WalletModule,
+    DashboardModule,
+    AdminModule,
+  ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: UserTypeGuard,
     },
     {
       provide: APP_FILTER,

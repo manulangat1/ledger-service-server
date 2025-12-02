@@ -22,8 +22,6 @@ export class AddSupportedCurrencies1763754554656 implements Seeder {
     ];
     const recordsCount = await fetchRecordCount(Currency, dataSource);
 
-    console.log(recordsCount);
-
     if (recordsCount < 1) {
       await dataSource
         .createQueryBuilder()

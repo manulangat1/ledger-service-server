@@ -23,6 +23,16 @@ export const _401 = {
     message: 'The origin is not allowed by CORS',
   },
 };
+export const _403 = {
+  FORBIDDEN: {
+    code: 'FORBIDDEN',
+    message: 'You are not authorized to access this resource',
+  },
+  ACCESS_DENIED: {
+    code: 'ACCESS_DENIED',
+    message: 'You are not authorized to perform this action',
+  },
+};
 export const _404 = {
   CURRENCY_UNSUPPORTED: {
     code: 'CURRENCY_UNSUPPORTED',
@@ -31,6 +41,10 @@ export const _404 = {
   WALLET_DOES_NOT_EXIST: {
     code: 'WALLET_DOES_NOT_EXIST',
     message: 'Wallet does not exist.',
+  },
+  ADMIN_NOT_FOIND: {
+    code: 'ADMIN_NOT_FOIND',
+    message: 'Admin does not exist.',
   },
 };
 export const _500 = {

@@ -12,6 +12,8 @@ import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { UserService } from '../../user/user.service';
+import { UserTypesEnum } from '../constants/types.enum';
+import { AdminService } from '../../admin/admin.service';
 @Injectable()
 export class AuthGuard implements CanActivate {
   private readonly logger = new Logger('Auth Guard');
@@ -20,6 +22,7 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService,
     private userService: UserService,
+    private adminService: AdminService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -42,9 +45,18 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verify(token, {
         secret: this.configService.getOrThrow<string>('JWT_SECRET'),
       });
-      const user = await this.userService.findByEmail(payload.email);
-      request['user'] = user;
-      return true;
+
+      const { email, type } = payload;
+
+      if (type === UserTypesEnum.USER) {
+        const user = await this.userService.findByEmail(payload.email);
+        request['user'] = { user, type };
+        return true;
+      } else {
+        const user = await this.adminService.findByEmail(email);
+        request['user'] = { user, type, permissions: user?.permissions };
+        return true;
+      }
     } catch (error) {
       this.logger.error(`Failed with error message ${error}`);
 

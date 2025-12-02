@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,8 +12,9 @@ import {
 import { Wallet } from './wallet.entity';
 import { genSalt } from 'bcrypt';
 import { hashPassword } from '../../common/lib/auth';
+import { Admin } from './admin.entity';
 @Entity()
-@Index(['email'])
+@Index(['email', 'username'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -44,6 +46,11 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => Admin, (admin) => admin.createdUsers, {
+    nullable: true,
+  })
+  createdBy: Admin;
 
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {

@@ -22,6 +22,7 @@ import {
   CreateUserDto,
 } from '../user/dto/create-user.dto';
 import { Currency } from '../db/entities/currency.entity';
+import { _404 } from '../common/constants/error_messages';
 
 @Injectable()
 export class AdminService {
@@ -55,6 +56,15 @@ export class AdminService {
     return emailExists;
   }
 
+  async findByEmail(email: string): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({
+      where: {
+        email,
+      },
+    });
+    if (!admin) throw new BadRequestException(_404.CURRENCY_UNSUPPORTED);
+    return admin;
+  }
   async fetchAllTransaction(
     admin: Admin,
     queries: TransactionQueriesDto,
@@ -62,6 +72,7 @@ export class AdminService {
     const { source, status, operation } = queries;
     const queryBuilder = await this.walletTransactionRepository
       .createQueryBuilder('transactions')
+      // .leftJoinAndSelect('transactions.user')
       .orderBy('transactions.createdAt', 'DESC');
 
     if (status) {
@@ -117,7 +128,10 @@ export class AdminService {
     };
   }
 
-  async addUser(dto: CreateUserByAdminDto): Promise<DataResponseDTO> {
+  async addUser(
+    dto: CreateUserByAdminDto,
+    admin: Admin,
+  ): Promise<DataResponseDTO> {
     const { email, firstName, lastName, username } = dto;
 
     const user = await this.dataSource.transaction(
@@ -137,13 +151,13 @@ export class AdminService {
           lastName,
           username,
           password,
+          createdBy: admin,
         });
         await manager.save(user);
 
         const defaultCurrency = await manager.findOne(Currency, {
           where: {
             currency: CurrencySymbol.KENYAN,
-            // currency: 'KES',
           },
         });
 
@@ -153,6 +167,7 @@ export class AdminService {
 
         const wallet = await manager.create(Wallet, {
           user,
+          // default wallet balance
           balance: 0,
           currency: defaultCurrency,
         });
