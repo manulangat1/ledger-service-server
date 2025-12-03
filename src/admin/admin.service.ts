@@ -23,6 +23,7 @@ import {
 } from '../user/dto/create-user.dto';
 import { Currency } from '../db/entities/currency.entity';
 import { _404 } from '../common/constants/error_messages';
+import { calculateOffset } from '../common/utils/getLimitOffset';
 
 @Injectable()
 export class AdminService {
@@ -69,10 +70,14 @@ export class AdminService {
     admin: Admin,
     queries: TransactionQueriesDto,
   ): Promise<DataResponseDTO> {
-    const { source, status, operation } = queries;
+    const { source, status, operation, page, limit } = queries;
+
+    const offset = calculateOffset({ page, limit });
+
     const queryBuilder = await this.walletTransactionRepository
       .createQueryBuilder('transactions')
-      // .leftJoinAndSelect('transactions.user')
+      .leftJoinAndSelect('transactions.wallet', 'wallet')
+      .leftJoinAndSelect('wallet.user', 'user')
       .orderBy('transactions.createdAt', 'DESC');
 
     if (status) {
@@ -87,8 +92,22 @@ export class AdminService {
       });
     }
 
-    const transactions = await queryBuilder.getMany();
-    return dataResponse(transactions);
+    queryBuilder.take(limit).skip(offset);
+
+    const [transactions, total] = await queryBuilder.getManyAndCount();
+
+    // TODO: transform the data to a format that exposes only the required fields.
+
+    return dataResponse({
+      data: transactions,
+      meta: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+      },
+    });
   }
 
   async loadStatistics() {

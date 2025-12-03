@@ -23,6 +23,7 @@ import {
 import { WalletTransaction } from '../db/entities/transaction.entity';
 import { TransferMoneyDTO } from './dto/transfer-money.dto';
 import { TransactionQueriesDto } from './dto/transaction-queries.dto';
+import { calculateOffset } from '../common/utils/getLimitOffset';
 
 @Injectable()
 export class WalletService {
@@ -39,6 +40,7 @@ export class WalletService {
 
   async getUserWallet(user: User) {
     this.logger.log(`Fetching wallets for the user ${user.id}`);
+
     const wallets = await this.walletRepository.find({
       where: {
         user: { id: user.id },
@@ -342,7 +344,9 @@ export class WalletService {
     user: User,
     queries: TransactionQueriesDto,
   ): Promise<DataResponseDTO> {
-    const { source, status, operation } = queries;
+    const { source, status, operation, page, limit } = queries;
+
+    const offset = calculateOffset({ page, limit });
     const wallet = await this.walletRepository.findOne({
       where: {
         user: {
@@ -371,7 +375,17 @@ export class WalletService {
       });
     }
 
-    const transactions = await queryBuilder.getMany();
-    return dataResponse(transactions);
+    queryBuilder.take(limit).skip(offset);
+    const [transactions, total] = await queryBuilder.getManyAndCount();
+    return dataResponse({
+      data: transactions,
+      meta: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / limit),
+        totalRecords: total,
+      },
+    });
   }
 }

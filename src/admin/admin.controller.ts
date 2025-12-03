@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Admin } from '../db/entities/admin.entity';
 import { TransactionQueriesDto } from '../wallet/dto/transaction-queries.dto';
@@ -15,6 +15,7 @@ import { AuditTrailDecorator } from '../common/decorators/audit-trail.decorator'
 
 @Controller('admin')
 @ApiTags('Admin')
+@ApiSecurity('access-token')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
