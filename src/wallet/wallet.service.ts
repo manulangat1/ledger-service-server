@@ -92,7 +92,7 @@ export class WalletService {
 
         // idempotency check.
         const existingTransaction =
-          await this.walletTransactionRepository.findOne({
+          await this.walletTransactionRepository.exists({
             where: {
               idempotencyKey,
             },
