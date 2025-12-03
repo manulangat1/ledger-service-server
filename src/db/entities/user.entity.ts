@@ -56,6 +56,8 @@ export class User {
   @OneToMany(() => AuditTrail, (auditTrail) => auditTrail.user)
   auditLogs: AuditTrail[];
 
+  // TODO: add  kyc fields and also kyc tiers
+
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {
     if (this.password) {
