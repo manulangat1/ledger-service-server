@@ -14,6 +14,10 @@ import { genSalt } from 'bcrypt';
 import { hashPassword } from '../../common/lib/auth';
 import { Admin } from './admin.entity';
 import { AuditTrail } from './audit-trail.entity';
+import {
+  IdentificationType,
+  KycStatus,
+} from '../../common/constants/types.enum';
 @Entity()
 @Index(['email', 'username'])
 export class User {
@@ -56,8 +60,75 @@ export class User {
   @OneToMany(() => AuditTrail, (auditTrail) => auditTrail.user)
   auditLogs: AuditTrail[];
 
-  // TODO: add  kyc fields and also kyc tiers
+  // start of kyc fields.
 
+  @Column({ type: 'enum', enum: IdentificationType, nullable: true })
+  identificationType: IdentificationType;
+
+  @Column('varchar', { nullable: true })
+  identificationCountry: string;
+
+  @Column('varchar', { nullable: true })
+  identificationNumber: string;
+
+  @Column('varchar', { nullable: true })
+  identificationFrontSide: string;
+
+  @Column('varchar', { nullable: true })
+  country: string;
+
+  @Column('varchar', { nullable: true })
+  city: string;
+
+  @Column('varchar', { nullable: true })
+  postalAddress: string;
+
+  @Column('varchar', { nullable: true })
+  postalCode: string;
+
+  @Column('varchar', { nullable: true })
+  residentialAddress: string;
+
+  @Column('varchar', { nullable: true })
+  proofOfAddress: string;
+
+  @Column('varchar', { nullable: true })
+  employmentStatus: string;
+
+  @Column('varchar', { nullable: true })
+  nextOfKinNames: string;
+
+  @Column('varchar', { nullable: true })
+  nextOfKinContact: string;
+
+  @Column('varchar', { nullable: true })
+  nextOfKinEmail: string;
+
+  @Column('varchar', { nullable: true })
+  taxPinCertificate: string;
+
+  @Column('varchar', { nullable: true })
+  taxPayerNumber: string;
+
+  @Column('varchar', { nullable: true })
+  facePhoto: string;
+
+  @Column('date', { nullable: true })
+  dateOfBirth: Date;
+
+  @Column({ default: KycStatus.PENDING })
+  kycStatus: string;
+
+  @Column({ nullable: true })
+  kycSubmittedAt: Date;
+
+  @Column({ nullable: true })
+  kycEvaluatedAt: Date;
+
+  // @Column({ nullable: true })
+  // kycRejectionReason:
+
+  /*  end of kyc fields */
   @BeforeInsert()
   private async generateSaltAndHash(): Promise<void> {
     if (this.password) {

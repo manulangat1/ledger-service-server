@@ -54,3 +54,15 @@ export enum AuditTrailEvents {
   USER_WITHDRAW = 'USER_WITHDRAW',
   USER_TRANSFER = 'USER_TRANSFER',
 }
+
+export enum KycStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  SUBMITTED = 'SUBMITTED',
+  REJECTED = 'REJECTED',
+}
+
+export enum IdentificationType {
+  NATIONAL_ID = 'NATIONAL_ID',
+  PASSPORT = 'PASSPORT',
+}

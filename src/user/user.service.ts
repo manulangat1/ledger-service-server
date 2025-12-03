@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { User } from '../db/entities/user.entity';
+import { KycDto } from './dto/kyc.dto';
 
 @Injectable()
 export class UserService {
@@ -22,14 +23,6 @@ export class UserService {
   loadUserProfile(user: User) {
     this.logger.log(`Accessing users profile with user ID ${user.id}`);
     return user;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
   }
 
   remove(id: number) {
@@ -67,5 +60,21 @@ export class UserService {
   async findByUsername(username: string): Promise<User | null> {
     const usernameExists = await this.userRepository.findOneBy({ username });
     return usernameExists;
+  }
+
+  async uploadKyc(user: User, dto: KycDto): Promise<User | any> {
+    const updatedFields = {};
+
+    for (const [key, value] of Object.entries(dto)) {
+      if (value !== undefined && value !== null) {
+        updatedFields[key] = value;
+      }
+    }
+
+    Object.assign(user, updatedFields);
+
+    user.kycStatus = 'SUBMITTED';
+
+    return await this.userRepository.save(user);
   }
 }
